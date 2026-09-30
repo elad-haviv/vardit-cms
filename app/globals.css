@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+:root {
+  --cream: #faf6f0;
+  --terracotta: #c0562f;
+  --terracotta-dark: #9c4123;
+  --olive: #6b7a3f;
+  --brown: #4a3728;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--cream);
+  color: var(--brown);
+  font-family: "Heebo", system-ui, sans-serif;
+}
+
+.prose-recipe {
+  line-height: 1.9;
+  font-size: 1.05rem;
+}
+.prose-recipe h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 1.4em 0 0.5em;
+  color: var(--terracotta-dark);
+}
+.prose-recipe h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 1.2em 0 0.5em;
+}
+.prose-recipe p {
+  margin: 0.8em 0;
+}
+.prose-recipe ul,
+.prose-recipe ol {
+  margin: 0.8em 1.4em;
+  padding-right: 1em;
+}
+.prose-recipe ul {
+  list-style: disc;
+}
+.prose-recipe ol {
+  list-style: decimal;
+}
+.prose-recipe li {
+  margin: 0.3em 0;
+}
+.prose-recipe img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 1em auto;
+  display: block;
+}
+.prose-recipe a {
+  color: var(--terracotta);
+  text-decoration: underline;
+}
+.prose-recipe blockquote {
+  border-right: 4px solid var(--terracotta);
+  padding-right: 1em;
+  margin: 1em 0;
+  color: #6b5d4f;
+  font-style: italic;
+}
+.prose-recipe table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+.prose-recipe td,
+.prose-recipe th {
+  border: 1px solid #e2d8cb;
+  padding: 0.5em;
+}
+
+.ad-slot {
+  display: block;
+  overflow: hidden;
+  text-align: center;
+}
+.ad-slot:empty {
+  display: none;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+data/*.db-wal
+data/*.db-shm
+*.log
+.DS_Store
+.env

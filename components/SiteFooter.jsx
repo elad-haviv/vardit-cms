@@ -1,0 +1,56 @@
+import Link from "next/link";
+import { getDb } from "@/lib/db";
+
+export default function SiteFooter({ siteTitle, youtube, facebook }) {
+  const cats = getDb()
+    .prepare(
+      `SELECT c.slug, c.name, COUNT(p.id) cnt FROM categories c
+       JOIN posts p ON p.category_id = c.id AND p.published = 1
+       GROUP BY c.id ORDER BY cnt DESC LIMIT 12`
+    )
+    .all();
+
+  return (
+    <footer className="bg-[#4a3728] text-amber-50 mt-12">
+      <div className="mx-auto max-w-6xl px-4 py-10 grid gap-8 md:grid-cols-3">
+        <div>
+          <div className="flex items-center gap-3">
+            <span className="w-10 h-10 rounded-full bg-[#c0562f] text-white flex items-center justify-center text-xl font-black">ו</span>
+            <span className="font-black text-lg">{siteTitle}</span>
+          </div>
+          <p className="mt-3 text-sm text-amber-100/80 leading-relaxed">
+            מתכונים מבית סבתא — מטבח תוניסאי-יהודי אותנטי, מדור לדור.
+          </p>
+          <div className="mt-4 flex gap-3">
+            <a href={youtube} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-sm transition">YouTube</a>
+            <a href={facebook} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-sm transition">Facebook</a>
+          </div>
+        </div>
+        <div>
+          <h3 className="font-bold mb-3 text-amber-200">קטגוריות מובילות</h3>
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-amber-100/90">
+            {cats.map((c) => (
+              <li key={c.slug}>
+                <Link href={`/category/${c.slug}`} className="hover:text-white transition">
+                  {c.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 className="font-bold mb-3 text-amber-200">מידע</h3>
+          <ul className="space-y-1 text-sm text-amber-100/90">
+            <li><Link href="/recipes" className="hover:text-white transition">כל המתכונים</Link></li>
+            <li><Link href="/page/about" className="hover:text-white transition">אודות</Link></li>
+            <li><Link href="/page/contact" className="hover:text-white transition">צור קשר</Link></li>
+            <li><Link href="/admin" className="hover:text-white transition">ניהול</Link></li>
+          </ul>
+        </div>
+      </div>
+      <div className="border-t border-white/10 py-4 text-center text-xs text-amber-100/60">
+        © {new Date().getFullYear()} {siteTitle} · כל הזכויות שמורות
+      </div>
+    </footer>
+  );
+}
