@@ -127,7 +127,7 @@ export default function ImageGalleryModal({ open, onClose, onSelect }) {
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl max-h-[88vh] flex flex-col" dir="rtl">
         <div className="flex items-center justify-between p-4 border-b border-amber-100 flex-wrap gap-2">
           <h2 className="font-black text-lg text-[#4a3728]">גלריית תמונות</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl" aria-label="סגור">
+          <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl" aria-label="סגור">
             ✕
           </button>
         </div>
@@ -185,6 +185,7 @@ export default function ImageGalleryModal({ open, onClose, onSelect }) {
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
                 {g.items.map((f) => (
                   <button
+                    type="button"
                     key={f.name}
                     onClick={() => onSelect(`/images/${f.name}`)}
                     className="group border border-amber-100 rounded-xl overflow-hidden hover:border-[#c0562f] hover:shadow transition text-right bg-white"
@@ -211,6 +212,7 @@ export default function ImageGalleryModal({ open, onClose, onSelect }) {
           {limited.length < visible.length && (
             <div className="text-center pb-4">
               <button
+                type="button"
                 onClick={() => setLimit((l) => l + PAGE)}
                 className="text-sm font-bold text-[#c0562f] bg-amber-50 border border-amber-200 rounded-full px-6 py-2 hover:bg-amber-100 transition"
               >
