@@ -82,6 +82,8 @@ export default function DualEditor({ name, initialHtml = "", rows = 18 }) {
         class: "prose-recipe tiptap-content min-h-[320px] focus:outline-none px-1",
       },
     },
+    // keep the hidden form input in sync while typing (WYSIWYG mode)
+    onUpdate: ({ editor }) => setHtml(editor.getHTML()),
   });
 
   // CodeMirror: built once on mount, kept alive inside its (hidden) container.
