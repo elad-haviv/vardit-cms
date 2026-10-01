@@ -5,13 +5,14 @@ import CommentSection from "@/components/CommentSection";
 import { formatDateHe, injectInContentAd, stripHtml } from "@/lib/util";
 import { decodeSlug } from "@/lib/util";
 import { getDb, getActiveAd } from "@/lib/db";
+import { getPostCategoryLists, getPostTagLists } from "@/lib/posts.mjs";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
   const { slug: rawSlug } = await params;
   const slug = decodeSlug(rawSlug);
-  const post = getDb().prepare("SELECT * FROM posts WHERE slug = ? AND published = 1").get(slug);
+  const post = getDb().prepare("SELECT * FROM posts WHERE slug = ? AND published = 1 AND deleted_at IS NULL").get(slug);
   if (!post) return { title: "מתכון לא נמצא" };
   const desc = post.excerpt || stripHtml(post.content, 160);
   const meta = {
@@ -36,29 +37,43 @@ export default async function RecipePage({ params }) {
   const { slug: rawSlug } = await params;
   const slug = decodeSlug(rawSlug);
   const db = getDb();
-  const post = db.prepare("SELECT * FROM posts WHERE slug = ? AND published = 1").get(slug);
+  const post = db.prepare("SELECT * FROM posts WHERE slug = ? AND published = 1 AND deleted_at IS NULL").get(slug);
   if (!post) notFound();
 
   db.prepare("UPDATE posts SET views = views + 1 WHERE id = ?").run(post.id);
 
-  const cat = post.category_id
-    ? db.prepare("SELECT * FROM categories WHERE id = ?").get(post.category_id)
-    : null;
+  const catLists = getPostCategoryLists(db, [post.id]);
+  const cats = catLists.get(post.id) || [];
+  const cat = cats[0] || null;
+
+  const tagLists = getPostTagLists(db, [post.id]);
+  const tags = tagLists.get(post.id) || [];
 
   const prev = db
-    .prepare("SELECT slug, title FROM posts WHERE published = 1 AND (created_at < ? OR (created_at = ? AND id < ?)) ORDER BY created_at DESC, id DESC LIMIT 1")
+    .prepare("SELECT slug, title FROM posts WHERE published = 1 AND deleted_at IS NULL AND (created_at < ? OR (created_at = ? AND id < ?)) ORDER BY created_at DESC, id DESC LIMIT 1")
     .get(post.created_at, post.created_at, post.id);
   const next = db
-    .prepare("SELECT slug, title FROM posts WHERE published = 1 AND (created_at > ? OR (created_at = ? AND id > ?)) ORDER BY created_at ASC, id ASC LIMIT 1")
+    .prepare("SELECT slug, title FROM posts WHERE published = 1 AND deleted_at IS NULL AND (created_at > ? OR (created_at = ? AND id > ?)) ORDER BY created_at ASC, id ASC LIMIT 1")
     .get(post.created_at, post.created_at, post.id);
 
-  const related = cat
-    ? db
-        .prepare(
-          "SELECT p.*, c.name AS category_name FROM posts p LEFT JOIN categories c ON c.id = p.category_id WHERE p.published = 1 AND p.category_id = ? AND p.id != ? ORDER BY RANDOM() LIMIT 3"
-        )
-        .all(cat.id, post.id)
-    : [];
+  const relatedCatIds = cats.map((c) => c.id);
+  let related = [];
+  if (relatedCatIds.length > 0) {
+    const marks = relatedCatIds.map(() => "?").join(",");
+    related = db
+      .prepare(
+        `SELECT p.* FROM posts p
+         JOIN post_categories pc ON pc.post_id = p.id
+         WHERE p.published = 1 AND p.deleted_at IS NULL AND p.id != ?
+           AND pc.category_id IN (${marks})
+         GROUP BY p.id ORDER BY RANDOM() LIMIT 3`
+      )
+      .all(post.id, ...relatedCatIds);
+    const relCatMap = getPostCategoryLists(db, related.map((r) => r.id));
+    related = related.map((r) => ({ ...r, _cats: relCatMap.get(r.id) || [] }));
+  }
+
+  const commentsEnabled = post.comments_enabled !== 0;
 
   const inContentAd = getActiveAd("in_content");
   const contentRender = injectInContentAd(post.content, inContentAd ? inContentAd.html : null);
@@ -67,25 +82,43 @@ export default async function RecipePage({ params }) {
     <article className="max-w-3xl mx-auto">
       <nav className="text-sm text-gray-500 mb-3">
         <Link href="/" className="hover:text-[#c0562f]">דף הבית</Link>
-        {" › "}
         {cat && (
           <>
-            <Link href={`/category/${cat.slug}`} className="hover:text-[#c0562f]">{cat.name}</Link>
             {" › "}
+            <Link href={`/category/${cat.slug}`} className="hover:text-[#c0562f]">{cat.name}</Link>
           </>
         )}
+        {" › "}
         <span className="text-[#9c4123] font-medium">{post.title}</span>
       </nav>
 
       <h1 className="text-3xl md:text-4xl font-black text-[#4a3728] leading-tight">{post.title}</h1>
-      <div className="flex items-center gap-3 mt-3 text-sm text-gray-400">
-        {cat && (
-          <Link href={`/category/${cat.slug}`} className="bg-[#c0562f]/10 text-[#c0562f] px-3 py-1 rounded-full font-bold text-xs">
-            {cat.name}
+      <div className="flex items-center flex-wrap gap-2 mt-3 text-sm text-gray-400">
+        {cats.map((c) => (
+          <Link
+            key={c.id}
+            href={`/category/${c.slug}`}
+            className="bg-[#c0562f]/10 text-[#c0562f] px-3 py-1 rounded-full font-bold text-xs"
+          >
+            {c.name}
           </Link>
-        )}
+        ))}
         <time>{formatDateHe(post.created_at)}</time>
       </div>
+
+      {tags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+          {tags.map((t) => (
+            <Link
+              key={t.id}
+              href={`/tag/${t.slug}`}
+              className="bg-amber-100 text-[#9c4123] hover:bg-amber-200 px-2.5 py-0.5 rounded-full font-medium text-xs transition"
+            >
+              #{t.name}
+            </Link>
+          ))}
+        </div>
+      )}
 
       {post.featured_image_url && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -121,18 +154,18 @@ export default async function RecipePage({ params }) {
         </div>
       </nav>
 
-      {related.length > 0 && (
+      {related.length > 0 && cat && (
         <section className="mt-12">
           <h2 className="text-2xl font-black text-[#4a3728] mb-4">מתכונים נוספים ב{cat.name}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {related.map((p) => (
-              <RecipeCard key={p.id} post={p} categoryName={p.category_name} />
+              <RecipeCard key={p.id} post={p} categories={p._cats} />
             ))}
           </div>
         </section>
       )}
 
-      <CommentSection postId={post.id} />
+      {commentsEnabled && <CommentSection postId={post.id} />}
     </article>
   );
 }

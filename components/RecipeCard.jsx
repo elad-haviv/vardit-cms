@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { formatDateHe } from "@/lib/util";
 
-export default function RecipeCard({ post, categoryName }) {
+/** categories: array of {id, name, slug} — renders up to 2 chips on the image. */
+export default function RecipeCard({ post, categories, categoryName }) {
+  const cats = Array.isArray(categories) && categories.length > 0
+    ? categories
+    : categoryName
+      ? [{ name: categoryName }]
+      : [];
+  const chips = cats.slice(0, 2);
   return (
     <article className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-amber-100 flex flex-col">
       <Link href={`/recipe/${post.slug}`} className="block relative aspect-[4/3] overflow-hidden bg-amber-50">
@@ -16,10 +23,17 @@ export default function RecipeCard({ post, categoryName }) {
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">🍳</div>
         )}
-        {categoryName && (
-          <span className="absolute top-3 right-3 bg-[#c0562f] text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-            {categoryName}
-          </span>
+        {chips.length > 0 && (
+          <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
+            {chips.map((c, i) => (
+              <span
+                key={c.slug || c.name || i}
+                className="bg-[#c0562f] text-white text-xs font-bold px-3 py-1 rounded-full shadow"
+              >
+                {c.name}
+              </span>
+            ))}
+          </div>
         )}
       </Link>
       <div className="p-4 flex flex-col flex-1">

@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { savePage } from "@/lib/actions";
 import { getDb } from "@/lib/db";
+import DualEditor from "@/components/admin/DualEditor";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ export default async function EditPage({ params }) {
   if (!isNew && !page) notFound();
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-2xl font-black text-[#4a3728]">{isNew ? "עמוד חדש" : `עריכה: ${page.title}`}</h1>
         <Link href="/admin/pages" className="text-sm text-gray-500 hover:text-[#c0562f]">← חזרה</Link>
@@ -30,8 +31,9 @@ export default async function EditPage({ params }) {
           <input name="slug" dir="ltr" defaultValue={page?.slug || ""} className="w-full rounded-lg border border-amber-200 px-4 py-2 text-sm" />
         </div>
         <div>
-          <label className="block text-sm font-bold mb-1">תוכן (HTML)</label>
-          <textarea name="html" rows={12} dir="auto" defaultValue={page?.html || ""} className="w-full rounded-lg border border-amber-200 px-4 py-2 text-sm font-mono text-xs" />
+          <label className="block text-sm font-bold mb-1">תוכן</label>
+          <p className="text-xs text-gray-400 mb-1">עורך ויזואלי או עורך HTML — מתחלפים עם סנכרון תוכן מלא; אפשר להוסיף תמונות מהגלריה</p>
+          <DualEditor name="html" initialHtml={page?.html || ""} rows={12} />
         </div>
         <label className="flex items-center gap-2 text-sm font-medium">
           <input type="checkbox" name="published" defaultChecked={page ? !!page.published : true} className="w-4 h-4 accent-[#c0562f]" />

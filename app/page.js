@@ -1,6 +1,7 @@
 import Link from "next/link";
 import RecipeCard from "@/components/RecipeCard";
 import { getDb, getActiveAd } from "@/lib/db";
+import { getPostCategoryLists } from "@/lib/posts.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -31,37 +32,28 @@ function BetweenCardsAd() {
 export default function HomePage() {
   const db = getDb();
   const latest = db
-    .prepare(
-      `SELECT p.*, c.name AS category_name, c.slug AS category_slug FROM posts p
-       LEFT JOIN categories c ON c.id = p.category_id
-       WHERE p.published = 1 ORDER BY p.created_at DESC LIMIT ?`
-    )
+    .prepare("SELECT * FROM posts WHERE published = 1 AND deleted_at IS NULL ORDER BY created_at DESC LIMIT ?")
     .all(PER_PAGE);
   const featured = db
-    .prepare(
-      `SELECT p.*, c.name AS category_name, c.slug AS category_slug FROM posts p
-       LEFT JOIN categories c ON c.id = p.category_id
-       WHERE p.published = 1 AND p.featured = 1 ORDER BY p.created_at DESC LIMIT 6`
-    )
+    .prepare("SELECT * FROM posts WHERE published = 1 AND deleted_at IS NULL AND featured = 1 ORDER BY created_at DESC LIMIT 6")
     .all();
   const featuredFallback =
     featured.length === 0
       ? db
-          .prepare(
-            `SELECT p.*, c.name AS category_name, c.slug AS category_slug FROM posts p
-             LEFT JOIN categories c ON c.id = p.category_id
-             WHERE p.published = 1 ORDER BY p.views DESC, p.created_at DESC LIMIT 6`
-          )
+          .prepare("SELECT * FROM posts WHERE published = 1 AND deleted_at IS NULL ORDER BY views DESC, created_at DESC LIMIT 6")
           .all()
       : featured;
+  const ids = [...new Set([...latest, ...featuredFallback].map((p) => p.id))];
+  const catMap = getPostCategoryLists(db, ids);
   const cats = db
     .prepare(
-      `SELECT c.slug, c.name, COUNT(p.id) cnt FROM categories c
-       JOIN posts p ON p.category_id = c.id AND p.published = 1
+      `SELECT c.slug, c.name, COUNT(DISTINCT p.id) cnt FROM categories c
+       JOIN post_categories pc ON pc.category_id = c.id
+       JOIN posts p ON p.id = pc.post_id AND p.published = 1 AND p.deleted_at IS NULL
        GROUP BY c.id ORDER BY cnt DESC LIMIT 14`
     )
     .all();
-  const total = db.prepare("SELECT COUNT(*) c FROM posts WHERE published = 1").get().c;
+  const total = db.prepare("SELECT COUNT(*) c FROM posts WHERE published = 1 AND deleted_at IS NULL").get().c;
 
   return (
     <div className="space-y-12">
@@ -96,7 +88,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Category chips */}
+      {/* Category chips (text only) */}
       <section aria-label="קטגוריות">
         <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-none">
           {cats.map((c) => (
@@ -119,7 +111,7 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {featuredFallback.map((p) => (
-            <RecipeCard key={p.id} post={p} categoryName={p.category_name} />
+            <RecipeCard key={p.id} post={p} categories={catMap.get(p.id) || []} />
           ))}
         </div>
       </section>
@@ -130,7 +122,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {latest.map((p, i) => (
             <div key={p.id} className="contents">
-              <RecipeCard post={p} categoryName={p.category_name} />
+              <RecipeCard post={p} categories={catMap.get(p.id) || []} />
               {(i + 1) % 8 === 0 && i !== latest.length - 1 && <BetweenCardsAd />}
             </div>
           ))}

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { saveCategory, deleteCategory } from "@/lib/actions";
 import { getDb } from "@/lib/db";
+import CategoryRow from "@/components/admin/CategoryRow";
 
 export const dynamic = "force-dynamic";
 
@@ -13,10 +14,13 @@ export default async function AdminCategories({ searchParams }) {
   const db = getDb();
   const cats = db
     .prepare(
-      `SELECT c.*, (SELECT COUNT(*) FROM posts p WHERE p.category_id = c.id AND p.published = 1) cnt
+      `SELECT c.*, (SELECT COUNT(DISTINCT p.id) FROM posts p
+                    JOIN post_categories pc ON pc.post_id = p.id AND pc.category_id = c.id
+                    WHERE p.published = 1 AND p.deleted_at IS NULL) cnt
        FROM categories c ORDER BY name`
     )
-    .all();
+    .all()
+    .map((c) => ({ id: c.id, name: c.name, slug: c.slug, description: c.description, image_url: c.image_url, cnt: c.cnt }));
 
   return (
     <div>
@@ -29,16 +33,13 @@ export default async function AdminCategories({ searchParams }) {
         <button className="bg-[#c0562f] text-white font-bold px-5 rounded-lg text-sm">הוסף</button>
       </form>
 
-      <div className="bg-white rounded-2xl border border-amber-100 divide-y divide-amber-50 max-w-xl">
+      <div className="space-y-3 max-w-2xl">
         {cats.map((c) => (
-          <div key={c.id} className="p-3 flex items-center justify-between gap-3">
-            <form action={saveCategory} className="flex items-center gap-2 flex-1">
-              <input type="hidden" name="id" value={c.id} />
-              <input name="name" defaultValue={c.name} className="flex-1 rounded-lg border border-transparent hover:border-amber-200 focus:border-amber-200 px-2 py-1 text-sm font-medium" />
-              <span className="text-xs text-gray-400">{c.cnt} מתכונים</span>
-              <button className="text-xs text-[#c0562f] font-bold">שמור</button>
-            </form>
-            <form action={deleteCategory}>
+          <div key={c.id} className="flex items-start gap-2">
+            <div className="flex-1 min-w-0">
+              <CategoryRow category={c} saveCategory={saveCategory} />
+            </div>
+            <form action={deleteCategory} className="pt-4 shrink-0">
               <input type="hidden" name="id" value={c.id} />
               <button className="text-xs text-red-500 hover:underline">מחיקה</button>
             </form>

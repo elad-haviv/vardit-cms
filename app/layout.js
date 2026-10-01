@@ -13,8 +13,6 @@ export const metadata = {
 export default function RootLayout({ children }) {
   const siteTitle = getSetting("site_title", "ורדית חביב");
   const subtitle = getSetting("site_subtitle", "מתכונים מבית סבתא");
-  const youtube = getSetting("youtube_url", "https://www.youtube.com/channel/UC0CXSMXspDmGrtJ876QU6QA");
-  const facebook = getSetting("facebook_url", "https://www.facebook.com/1504309176316516");
   const headerAd = getActiveAd("header");
   const footerAd = getActiveAd("footer");
 
@@ -53,7 +51,7 @@ export default function RootLayout({ children }) {
         ) : (
           <div aria-hidden="true" />
         )}
-        <SiteFooter siteTitle={siteTitle} youtube={youtube} facebook={facebook} />
+        <SiteFooter siteTitle={siteTitle} />
       </body>
     </html>
   );

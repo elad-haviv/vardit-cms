@@ -2,6 +2,7 @@ import Link from "next/link";
 import RecipeCard from "@/components/RecipeCard";
 import Pagination from "@/components/Pagination";
 import { getDb, getActiveAd } from "@/lib/db";
+import { getPostCategoryLists } from "@/lib/posts.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -18,19 +19,18 @@ export default async function RecipesPage({ searchParams }) {
   const page = Math.max(1, Number(sp.page) || 1);
 
   const db = getDb();
-  const where = q ? "WHERE p.published = 1 AND (p.title LIKE ? OR p.excerpt LIKE ?)" : "WHERE p.published = 1";
+  const where = q
+    ? "WHERE p.published = 1 AND p.deleted_at IS NULL AND (p.title LIKE ? OR p.excerpt LIKE ?)"
+    : "WHERE p.published = 1 AND p.deleted_at IS NULL";
   const like = `%${q}%`;
   const params = q ? [like, like] : [];
 
   const total = db.prepare(`SELECT COUNT(*) c FROM posts p ${where}`).get(...params).c;
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
   const rows = db
-    .prepare(
-      `SELECT p.*, c.name AS category_name FROM posts p
-       LEFT JOIN categories c ON c.id = p.category_id
-       ${where} ORDER BY p.created_at DESC LIMIT ? OFFSET ?`
-    )
+    .prepare(`SELECT p.* FROM posts p ${where} ORDER BY p.created_at DESC LIMIT ? OFFSET ?`)
     .all(...params, PER_PAGE, (page - 1) * PER_PAGE);
+  const catMap = getPostCategoryLists(db, rows.map((r) => r.id));
 
   const ad = getActiveAd("between_cards");
 
@@ -61,7 +61,7 @@ export default async function RecipesPage({ searchParams }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {rows.map((p, i) => (
             <div key={p.id} className="contents">
-              <RecipeCard post={p} categoryName={p.category_name} />
+              <RecipeCard post={p} categories={catMap.get(p.id) || []} />
               {ad && (i + 1) % 8 === 0 && i !== rows.length - 1 && (
                 <div className="sm:col-span-2 lg:col-span-3">
                   <div className="ad-slot bg-white rounded-xl border border-amber-100 p-2" dangerouslySetInnerHTML={{ __html: ad.html }} />

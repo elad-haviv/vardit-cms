@@ -1,14 +1,34 @@
 import Link from "next/link";
-import { getDb } from "@/lib/db";
+import { getDb, getSetting } from "@/lib/db";
 
-export default function SiteFooter({ siteTitle, youtube, facebook }) {
+function parseLinksSetting() {
+  // Links manager: settings key 'links' holds JSON [{name, url}].
+  // Fallback: migrate from the legacy youtube_url / facebook_url keys.
+  const raw = getSetting("links", "");
+  try {
+    const arr = raw ? JSON.parse(raw) : [];
+    if (Array.isArray(arr) && arr.length > 0) {
+      return arr.filter((r) => r && r.name && r.url).map((r) => ({ name: String(r.name), url: String(r.url) }));
+    }
+  } catch { /* invalid JSON — fall through */ }
+  const yt = getSetting("youtube_url", "");
+  const fb = getSetting("facebook_url", "");
+  const links = [];
+  if (yt) links.push({ name: "YouTube", url: yt });
+  if (fb) links.push({ name: "Facebook", url: fb });
+  return links;
+}
+
+export default function SiteFooter({ siteTitle }) {
   const cats = getDb()
     .prepare(
-      `SELECT c.slug, c.name, COUNT(p.id) cnt FROM categories c
-       JOIN posts p ON p.category_id = c.id AND p.published = 1
+      `SELECT c.slug, c.name, COUNT(DISTINCT p.id) cnt FROM categories c
+       JOIN post_categories pc ON pc.category_id = c.id
+       JOIN posts p ON p.id = pc.post_id AND p.published = 1 AND p.deleted_at IS NULL
        GROUP BY c.id ORDER BY cnt DESC LIMIT 12`
     )
     .all();
+  const links = parseLinksSetting();
 
   return (
     <footer className="bg-[#4a3728] text-amber-50 mt-12">
@@ -21,10 +41,21 @@ export default function SiteFooter({ siteTitle, youtube, facebook }) {
           <p className="mt-3 text-sm text-amber-100/80 leading-relaxed">
             מתכונים מבית סבתא — מטבח תוניסאי-יהודי אותנטי, מדור לדור.
           </p>
-          <div className="mt-4 flex gap-3">
-            <a href={youtube} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-sm transition">YouTube</a>
-            <a href={facebook} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-sm transition">Facebook</a>
-          </div>
+          {links.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {links.map((l, i) => (
+                <a
+                  key={i}
+                  href={l.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-sm transition"
+                >
+                  {l.name}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
         <div>
           <h3 className="font-bold mb-3 text-amber-200">קטגוריות מובילות</h3>
