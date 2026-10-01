@@ -35,7 +35,7 @@ export default function SiteFooter({ siteTitle }) {
       <div className="mx-auto max-w-6xl px-4 py-10 grid gap-8 md:grid-cols-3">
         <div>
           <div className="flex items-center gap-3">
-            <span className="w-10 h-10 rounded-full bg-[#c0562f] text-white flex items-center justify-center text-xl font-black">ו</span>
+            <img src="/images/logo.png" alt={siteTitle} className="w-12 h-12 object-contain rounded-lg bg-white/90" />
             <span className="font-black text-lg">{siteTitle}</span>
           </div>
           <p className="mt-3 text-sm text-amber-100/80 leading-relaxed">

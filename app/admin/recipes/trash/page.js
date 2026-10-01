@@ -4,6 +4,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { restorePostAction, permanentDeletePostAction } from "@/lib/actions";
 import { getDb } from "@/lib/db";
 import ConfirmSubmit from "@/components/admin/ConfirmSubmit";
+import { RestoreIcon, WarnIcon, iconBtnRestore, iconBtnWarn } from "@/components/admin/ActionIcons";
 
 export const dynamic = "force-dynamic";
 
@@ -46,19 +47,24 @@ export default async function AdminTrash({ searchParams }) {
                 <span className="text-xs text-gray-400 mr-3" dir="ltr">/recipe/{r.slug}</span>
                 <span className="block text-xs text-gray-400 mt-0.5">נמחק: {fmtTrashedAt(r.deleted_at)}</span>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1 shrink-0">
                 <form action={restorePostAction}>
                   <input type="hidden" name="id" value={r.id} />
-                  <button className="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-full transition">
-                    שחזור
+                  <button
+                    className={iconBtnRestore}
+                    title={`שחזור: ${r.title}`}
+                    aria-label={`שחזור: ${r.title}`}
+                  >
+                    <RestoreIcon />
                   </button>
                 </form>
                 <ConfirmSubmit
                   action={permanentDeletePostAction}
                   message={`למחוק את "${r.title}" לצמיתות? הפעולה אינה ניתנת לביטול — יימחקו גם כל התגובות, הקטגוריות, התגיות והגרסאות של המתכון.`}
-                  label="מחיקה לצמיתות"
+                  label={<WarnIcon />}
                   hidden={[{ name: "id", value: r.id }]}
-                  className="bg-red-50 text-red-600 border border-red-200 text-xs font-bold px-4 py-2 rounded-full hover:bg-red-100 transition"
+                  className={iconBtnWarn}
+                  title={`מחיקה לצמיתות: ${r.title}`}
                 />
               </div>
             </div>

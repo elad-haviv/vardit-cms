@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const PREFIX_RE = /^(thumbs-|\d{2})/;
 
@@ -37,6 +37,19 @@ export default function ImageGalleryModal({ open, onClose, onSelect }) {
   const [sortDir, setSortDir] = useState("asc");
   const [query, setQuery] = useState("");
   const [grouped, setGrouped] = useState(true);
+  // Render incrementally: 60 cards initially, +60 per "load more" / near-bottom scroll
+  const PAGE = 60;
+  const [limit, setLimit] = useState(PAGE);
+  const scrollRef = useRef(null);
+
+  const onScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    if (el.scrollHeight - el.scrollTop - el.clientHeight < 400) {
+      setLimit((l) => (l < visibleTotal.current ? l + PAGE : l));
+    }
+  }, []);
+  const visibleTotal = useRef(0);
 
   const load = useCallback(async () => {
     setError("");
@@ -52,7 +65,7 @@ export default function ImageGalleryModal({ open, onClose, onSelect }) {
   }, []);
 
   useEffect(() => {
-    if (open) load();
+    if (open) { load(); setLimit(PAGE); }
   }, [open, load]);
 
   const upload = useCallback(
@@ -87,10 +100,13 @@ export default function ImageGalleryModal({ open, onClose, onSelect }) {
     });
   }, [files, sortKey, sortDir, query]);
 
+  const limited = useMemo(() => visible.slice(0, limit), [visible, limit]);
+  visibleTotal.current = visible.length;
+
   const groups = useMemo(() => {
-    if (!grouped) return [{ prefix: "", label: `כל התמונות (${visible.length})`, items: visible }];
+    if (!grouped) return [{ prefix: "", label: `כל התמונות (${limited.length})`, items: limited }];
     const map = new Map();
-    for (const f of visible) {
+    for (const f of limited) {
       const p = prefixOf(f.name);
       if (!map.has(p)) map.set(p, []);
       map.get(p).push(f);
@@ -152,7 +168,7 @@ export default function ImageGalleryModal({ open, onClose, onSelect }) {
           </label>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4">
+        <div ref={scrollRef} onScroll={onScroll} className="flex-1 overflow-y-auto p-4">
           {error && <div className="mb-3 bg-red-50 text-red-700 rounded-lg p-3 text-sm">{error}</div>}
           {files === null && !error && <p className="text-center text-gray-400 py-10">טוען תמונות...</p>}
           {files !== null && visible.length === 0 && (
@@ -192,6 +208,16 @@ export default function ImageGalleryModal({ open, onClose, onSelect }) {
               </div>
             </div>
           ))}
+          {limited.length < visible.length && (
+            <div className="text-center pb-4">
+              <button
+                onClick={() => setLimit((l) => l + PAGE)}
+                className="text-sm font-bold text-[#c0562f] bg-amber-50 border border-amber-200 rounded-full px-6 py-2 hover:bg-amber-100 transition"
+              >
+                טעינת עוד ({visible.length - limited.length} נותרו)
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

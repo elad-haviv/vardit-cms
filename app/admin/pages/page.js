@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth";
 import { deletePage } from "@/lib/actions";
 import { getDb } from "@/lib/db";
+import { EditIcon, ViewIcon, TrashIcon, iconBtnEdit, iconBtnView, iconBtnTrash } from "@/components/admin/ActionIcons";
 
 export const dynamic = "force-dynamic";
 
@@ -28,13 +29,35 @@ export default async function AdminPages() {
               <Link href={`/admin/pages/${r.id}`} className="font-bold hover:text-[#c0562f]">{r.title}</Link>
               <span className="text-xs text-gray-400 mr-3" dir="ltr">/page/{r.slug}</span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
               <span className={`text-xs font-bold px-2 py-1 rounded-full ${r.published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
                 {r.published ? "מפורסם" : "טיוטה"}
               </span>
+              <Link
+                href={`/admin/pages/${r.id}`}
+                className={iconBtnEdit}
+                title="עריכה"
+                aria-label={`עריכה: ${r.title}`}
+              >
+                <EditIcon />
+              </Link>
+              <Link
+                href={`/page/${r.slug}`}
+                className={iconBtnView}
+                title="צפייה באתר"
+                aria-label={`צפייה: ${r.title}`}
+              >
+                <ViewIcon />
+              </Link>
               <form action={deletePage}>
                 <input type="hidden" name="id" value={r.id} />
-                <button className="text-xs text-red-500 hover:underline">מחיקה</button>
+                <button
+                  className={iconBtnTrash}
+                  title="מחיקה"
+                  aria-label={`מחיקה: ${r.title}`}
+                >
+                  <TrashIcon />
+                </button>
               </form>
             </div>
           </div>

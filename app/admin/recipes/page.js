@@ -4,6 +4,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { trashPostAction } from "@/lib/actions";
 import { getDb } from "@/lib/db";
 import { getPostCategoryLists } from "@/lib/posts.mjs";
+import { EditIcon, ViewIcon, TrashIcon, iconBtnEdit, iconBtnView, iconBtnTrash, StarIcon } from "@/components/admin/ActionIcons";
 
 export const dynamic = "force-dynamic";
 
@@ -75,7 +76,11 @@ export default async function AdminRecipes({ searchParams }) {
             {rows.map((r) => (
               <tr key={r.id} className="hover:bg-amber-50/30">
                 <td className="p-3 font-medium">
-                  {r.featured ? "⭐ " : ""}
+                  {r.featured ? (
+                    <span className="text-[#c0562f] align-middle" title="מומלץ">
+                      <StarIcon />
+                    </span>
+                  ) : null}{" "}
                   <Link href={`/admin/recipes/${r.id}`} className="hover:text-[#c0562f]">{r.title}</Link>
                 </td>
                 <td className="p-3 text-gray-500">
@@ -89,11 +94,34 @@ export default async function AdminRecipes({ searchParams }) {
                   </span>
                 </td>
                 <td className="p-3 whitespace-nowrap">
-                  <Link href={`/recipe/${r.slug}`} className="text-xs text-gray-400 hover:text-[#c0562f] ml-3">צפייה</Link>
-                  <form action={trashPostAction} className="inline">
-                    <input type="hidden" name="id" value={r.id} />
-                    <button className="text-xs text-red-500 hover:underline">העברה לסל</button>
-                  </form>
+                  <div className="flex items-center gap-1 justify-start">
+                    <Link
+                      href={`/admin/recipes/${r.id}`}
+                      className={iconBtnEdit}
+                      title="עריכה"
+                      aria-label={`עריכה: ${r.title}`}
+                    >
+                      <EditIcon />
+                    </Link>
+                    <Link
+                      href={`/recipe/${r.slug}`}
+                      className={iconBtnView}
+                      title="צפייה באתר"
+                      aria-label={`צפייה: ${r.title}`}
+                    >
+                      <ViewIcon />
+                    </Link>
+                    <form action={trashPostAction} className="inline">
+                      <input type="hidden" name="id" value={r.id} />
+                      <button
+                        className={iconBtnTrash}
+                        title="העברה לסל מחזור"
+                        aria-label={`העברה לסל: ${r.title}`}
+                      >
+                        <TrashIcon />
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             ))}

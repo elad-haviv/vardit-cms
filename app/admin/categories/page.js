@@ -3,6 +3,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { saveCategory, deleteCategory } from "@/lib/actions";
 import { getDb } from "@/lib/db";
 import CategoryRow from "@/components/admin/CategoryRow";
+import { TrashIcon, iconBtnTrash } from "@/components/admin/ActionIcons";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +42,13 @@ export default async function AdminCategories({ searchParams }) {
             </div>
             <form action={deleteCategory} className="pt-4 shrink-0">
               <input type="hidden" name="id" value={c.id} />
-              <button className="text-xs text-red-500 hover:underline">מחיקה</button>
+              <button
+                className={iconBtnTrash}
+                title={`מחיקה: ${c.name}`}
+                aria-label={`מחיקה: ${c.name}`}
+              >
+                <TrashIcon />
+              </button>
             </form>
           </div>
         ))}

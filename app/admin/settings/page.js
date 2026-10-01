@@ -3,6 +3,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { saveSettings } from "@/lib/actions";
 import { getSetting } from "@/lib/db";
 import LinksManager from "@/components/admin/LinksManager";
+import HeroImageField from "@/components/admin/HeroImageField";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,34 @@ export default async function AdminSettings({ searchParams }) {
             defaultValue={getSetting("site_subtitle", "מתכונים מבית סבתא")}
             className="w-full rounded-lg border border-amber-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#c0562f]/40"
           />
+        </div>
+        <div className="border-t border-amber-100 pt-5">
+          <p className="text-sm font-black text-[#4a3728] mb-3">עריכת אזור הפתיחה בדף הבית (Hero)</p>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold mb-1">כותרת ראשית</label>
+              <input
+                name="hero_title"
+                defaultValue={getSetting("hero_title", "ורדית חביב")}
+                className="w-full rounded-lg border border-amber-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#c0562f]/40"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-1">כותרת משנה</label>
+              <input
+                name="hero_subtitle"
+                defaultValue={getSetting("hero_subtitle", "מתכונים מבית סבתא")}
+                className="w-full rounded-lg border border-amber-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#c0562f]/40"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-1">תמונת רקע (אופציונלי)</label>
+              <p className="text-xs text-[#8a7361] mb-2">
+                תמונה תוצג כרקע דמוי-שקוף מאחורי הכותרת. ללא תמונה — רקע הגרדיאנט הכתום הקבוע.
+              </p>
+              <HeroImageField initial={getSetting("hero_image", "")} />
+            </div>
+          </div>
         </div>
         <div>
           <label className="block text-sm font-bold mb-1">קישורים</label>

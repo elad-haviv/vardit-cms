@@ -5,7 +5,7 @@
  * props: action (server action fn), message, label, hidden [{name,value}], className, formClass
  * Used for permanent delete from the trash view.
  */
-export default function ConfirmSubmit({ action, message, label, hidden = [], className = "", formClass = "inline" }) {
+export default function ConfirmSubmit({ action, message, label, hidden = [], className = "", formClass = "inline", title = "" }) {
   return (
     <form
       action={action}
@@ -17,7 +17,7 @@ export default function ConfirmSubmit({ action, message, label, hidden = [], cla
       {hidden.map((h) => (
         <input key={h.name} type="hidden" name={h.name} value={h.value} />
       ))}
-      <button type="submit" className={className}>
+      <button type="submit" className={className} title={title} aria-label={title}>
         {label}
       </button>
     </form>

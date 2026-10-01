@@ -17,6 +17,7 @@ export default async function AdminLayout({ children }) {
           <nav className="space-y-1 text-sm">
             <AdminLink href="/admin">לוח בקרה</AdminLink>
             <AdminLink href="/admin/recipes">מתכונים</AdminLink>
+            <AdminLink href="/admin/featured">מתכונים מודגשים</AdminLink>
             <AdminLink href="/admin/categories">קטגוריות</AdminLink>
             <AdminLink href="/admin/pages">עמודים</AdminLink>
             <AdminLink href="/admin/comments">

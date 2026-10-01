@@ -20,7 +20,7 @@ export default function SiteHeader({ siteTitle, subtitle }) {
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex items-center justify-between h-16 gap-4">
           <Link href="/" className="flex items-center gap-3 shrink-0">
-            <span className="w-10 h-10 rounded-full bg-[#c0562f] text-white flex items-center justify-center text-xl font-black shadow">ו</span>
+            <img src="/images/logo.png" alt={siteTitle} className="w-12 h-12 object-contain rounded-lg bg-white/80 border border-amber-200/50" />
             <span className="leading-tight">
               <span className="block font-black text-lg text-[#4a3728]">{siteTitle}</span>
               <span className="block text-xs text-[#9c4123]">{subtitle}</span>

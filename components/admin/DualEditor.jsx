@@ -1,123 +1,95 @@
 "use client";
 
+/**
+ * Dual-mode content editor:
+ *  - WYSIWYG mode: TipTap v3 (@tiptap/react, React 19) — useEditor is called at the
+ *    TOP LEVEL of the component render (Rules of Hooks; a dynamic-imported hook call
+ *    inside an effect throws React #321 "invalid hook call").
+ *  - HTML mode: CodeMirror 6 (basicSetup + @codemirror/lang-html), a REAL code editor.
+ * Both editors stay MOUNTED at all times; the inactive one is hidden with CSS, so
+ * switching modes never re-initializes anything and content survives toggling.
+ * The current HTML lives in a hidden input named `name` for the server-action form.
+ * Reused for recipes (content) and pages (html).
+ */
+
 import { useCallback, useEffect, useRef, useState } from "react";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
+import Image from "@tiptap/extension-image";
+import { basicSetup, EditorView } from "codemirror";
+import { EditorState } from "@codemirror/state";
+import { html as cmHtml } from "@codemirror/lang-html";
 import ImageGalleryModal from "./ImageGalleryModal";
 
 const HTML_MODE = "html";
 const WYSIWYG_MODE = "wysiwyg";
 
-/**
- * Dual-mode content editor:
- *  - HTML mode: CodeMirror 6 (basicSetup + @codemirror/lang-html), a REAL code editor.
- *  - WYSIWYG mode: TipTap (StarterKit + Link + Image), RTL-aware.
- * Modes toggle with buttons and sync content both ways. The current HTML is kept in
- * a hidden input named `name` so the surrounding server-action form still submits it.
- * Reused for recipes (content) and pages (html).
- *
- * props: name, initialHtml, rows (approx editor height)
- */
 export default function DualEditor({ name, initialHtml = "", rows = 18 }) {
   const [mode, setMode] = useState(WYSIWYG_MODE);
   const [html, setHtml] = useState(initialHtml);
   const [galleryOpen, setGalleryOpen] = useState(false);
-  const [editorReady, setEditorReady] = useState(false);
 
-  // TipTap editor (WYSIWYG)
-  const tiptapRef = useRef(null);
-  const [TiptapKit, setTiptapKit] = useState(null);
+  // TipTap: hook at top level — no dynamic imports, no conditional calls.
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Link.configure({ openOnClick: false, HTMLAttributes: { target: "_blank", rel: "noopener noreferrer" } }),
+      Image.configure({ inline: false, allowBase64: false }),
+    ],
+    content: initialHtml,
+    immediatelyRender: false,
+    editorProps: {
+      attributes: {
+        dir: "rtl",
+        class: "prose-recipe tiptap-content min-h-[320px] focus:outline-none px-1",
+      },
+    },
+  });
 
-  // CodeMirror view (HTML)
+  // CodeMirror: built once on mount, kept alive inside its (hidden) container.
   const cmParentRef = useRef(null);
   const cmViewRef = useRef(null);
-
+  const [cmReady, setCmReady] = useState(false);
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const React = await import("@tiptap/react");
-        const PM = await import("@tiptap/pm/state");
-        const SK = await import("@tiptap/starter-kit");
-        const L = await import("@tiptap/extension-link");
-        const I = await import("@tiptap/extension-image");
-        if (cancelled) return;
-        const StarterKit = SK.default || SK.StarterKit;
-        const Link = L.Link || L.default;
-        const Image = I.Image || I.default;
-        const editor = React.useEditor({
-          extensions: [
-            StarterKit,
-            Link.configure({ openOnClick: false, HTMLAttributes: { target: "_blank", rel: "noopener noreferrer" } }),
-            Image.configure({ inline: false, allowBase64: false }),
-          ],
-          content: initialHtml,
-          immediatelyRender: false,
-          editorProps: {
-            attributes: {
-              dir: "rtl",
-              class: "prose-recipe tiptap-content min-h-[320px] focus:outline-none px-1",
-            },
-          },
-        });
-        tiptapRef.current = editor;
-        setTiptapKit({ React, PM, editor });
-        setEditorReady(true);
-      } catch (e) {
-        console.error("TipTap init failed", e);
-      }
-    })();
+    if (!cmParentRef.current || cmViewRef.current) return;
+    const view = new EditorView({
+      state: EditorState.create({
+        doc: initialHtml,
+        extensions: [
+          basicSetup,
+          cmHtml(),
+          EditorView.lineWrapping,
+          EditorView.updateListener.of((tr) => {
+            if (tr.docChanged) setHtml(tr.state.doc.toString());
+          }),
+        ],
+      }),
+      parent: cmParentRef.current,
+    });
+    cmViewRef.current = view;
+    setCmReady(true);
     return () => {
-      cancelled = true;
-      try { tiptapRef.current?.destroy?.(); } catch { /* noop */ }
+      view.destroy();
+      cmViewRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Build/tear down the CodeMirror view when in HTML mode.
-  useEffect(() => {
-    if (mode !== HTML_MODE) return;
-    let view = null;
-    let cancelled = false;
-    (async () => {
-      try {
-        const CM = await import("codemirror");
-        const LH = await import("@codemirror/lang-html");
-        const View = await import("@codemirror/view");
-        const State = await import("@codemirror/state");
-        if (cancelled || !cmParentRef.current) return;
-        view = new View.EditorView({
-          state: State.EditorState.create({
-            doc: html,
-            extensions: [CM.basicSetup, LH.html(), View.EditorView.lineWrapping],
-          }),
-          parent: cmParentRef.current,
-          dispatch: (tr) => {
-            view.update([tr]);
-            setHtml(tr.state.doc.toString());
-          },
-        });
-        cmViewRef.current = view;
-      } catch (e) {
-        console.error("CodeMirror init failed", e);
-      }
-    })();
-    return () => {
-      cancelled = true;
-      try { view?.destroy?.(); } catch { /* noop */ }
-      cmViewRef.current = null;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode]);
-
   const switchMode = (next) => {
     if (next === mode) return;
     if (next === HTML_MODE) {
-      // WYSIWYG -> HTML: pull TipTap's HTML as the doc
-      const editor = tiptapRef.current;
-      if (editor) setHtml(editor.getHTML());
+      // WYSIWYG -> HTML: replace the CodeMirror doc with TipTap's HTML
+      const doc = editor ? editor.getHTML() : html;
+      setHtml(doc);
+      const view = cmViewRef.current;
+      if (view) {
+        view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: doc } });
+        view.requestMeasure();
+      }
       setMode(HTML_MODE);
     } else {
-      // HTML -> WYSIWYG: push the CodeMirror/hidden HTML into TipTap
-      const editor = tiptapRef.current;
+      // HTML -> WYSIWYG: push the CM doc into TipTap
       if (editor) editor.commands.setContent(html || "");
       setMode(WYSIWYG_MODE);
     }
@@ -126,7 +98,6 @@ export default function DualEditor({ name, initialHtml = "", rows = 18 }) {
   const insertImage = useCallback(
     (src) => {
       const alt = src.split("/").pop() || "";
-      const editor = tiptapRef.current;
       if (mode === WYSIWYG_MODE && editor) {
         editor.chain().focus().setImage({ src, alt }).run();
       } else {
@@ -144,7 +115,7 @@ export default function DualEditor({ name, initialHtml = "", rows = 18 }) {
       }
       setGalleryOpen(false);
     },
-    [mode]
+    [mode, editor]
   );
 
   return (
@@ -175,29 +146,35 @@ export default function DualEditor({ name, initialHtml = "", rows = 18 }) {
         >
           🖼️ הוספת תמונה מהגלריה
         </button>
-        {!editorReady && <span className="text-xs text-gray-400">טוען עורך ויזואלי...</span>}
+        <span className="text-xs text-gray-400">
+          {mode === WYSIWYG_MODE
+            ? editor
+              ? "עורך ויזואלי מוכן ✓"
+              : "טוען עורך ויזואלי..."
+            : cmReady
+              ? "עורך קוד מוכן ✓"
+              : "טוען עורך קוד..."}
+        </span>
       </div>
 
-      {mode === HTML_MODE ? (
+      {/* Both editors stay mounted; the inactive one is hidden */}
+      <div className={mode === HTML_MODE ? "space-y-2" : "hidden"}>
         <div
           ref={cmParentRef}
           dir="ltr"
           className="rounded-lg border border-amber-200 overflow-hidden text-sm"
           style={{ minHeight: `${rows}rem` }}
         />
-      ) : (
+      </div>
+      <div className={mode === WYSIWYG_MODE ? "" : "hidden"}>
         <div
           dir="rtl"
           className="rounded-lg border border-amber-200 bg-white p-2 focus-within:ring-2 focus-within:ring-[#c0562f]/40"
           style={{ minHeight: `${rows}rem` }}
         >
-          {TiptapKit ? (
-            <TiptapKit.React.EditorContent editor={TiptapKit.editor} />
-          ) : (
-            <p className="text-sm text-gray-400 p-4">טוען עורך ויזואלי...</p>
-          )}
+          <EditorContent editor={editor} />
         </div>
-      )}
+      </div>
 
       <ImageGalleryModal
         open={galleryOpen}
