@@ -58,7 +58,7 @@ export async function GET(req) {
   const e = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const html = rows
     .map(
-      (r) => `<li class="bg-white rounded-xl border border-amber-100 p-4"><div class="flex justify-between items-baseline"><span class="font-bold text-[#9c4123]">${e(r.name)}</span><time class="text-xs text-gray-400">${new Date(r.created_at).toLocaleDateString("he-IL")}</time></div><p class="mt-1 text-sm whitespace-pre-wrap">${e(r.body)}</p></li>`
+      (r) => `<li class="bg-[var(--card)] rounded-xl border border-[var(--line)] p-4"><div class="flex justify-between items-baseline"><span class="font-bold text-[var(--paprika-deep)]">${e(r.name)}</span><time class="text-xs text-[var(--ink-soft)]">${new Date(r.created_at).toLocaleDateString("he-IL")}</time></div><p class="mt-1 text-sm whitespace-pre-wrap">${e(r.body)}</p></li>`
     )
     .join("");
   return new NextResponse(`<ul class="space-y-3">${html}</ul>`, {

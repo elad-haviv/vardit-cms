@@ -23,8 +23,8 @@ export default async function StaticPage({ params }) {
   if (!page) notFound();
   return (
     <article className="max-w-3xl mx-auto">
-      <h1 className="text-3xl font-black text-[#4a3728] mb-6">{page.title}</h1>
-      <div className="prose-recipe text-[#4a3728]" dangerouslySetInnerHTML={{ __html: page.html }} />
+      <h1 className="text-3xl font-display text-[var(--ink-deep)] mb-6">{page.title}</h1>
+      <div className="prose-recipe text-[var(--ink-deep)]" dangerouslySetInnerHTML={{ __html: page.html }} />
     </article>
   );
 }

@@ -20,15 +20,16 @@ export default function RootLayout({ children }) {
     <html lang="he" dir="rtl">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@300;400;500;700;900&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen flex flex-col">
+      <body className="min-h-screen flex flex-col antialiased">
         <SiteHeader siteTitle={siteTitle} subtitle={subtitle} />
         {headerAd ? (
-          <div className="w-full bg-white/70 border-b border-amber-100">
+          <div className="w-full bg-[var(--paper-deep)]/70 border-b border-[var(--line)]">
             <div
               className="mx-auto max-w-6xl px-4 py-2 ad-slot"
               dangerouslySetInnerHTML={{ __html: headerAd.html }}
@@ -42,7 +43,7 @@ export default function RootLayout({ children }) {
           <main className="mx-auto max-w-6xl px-4 py-6 w-full">{children}</main>
         </div>
         {footerAd ? (
-          <div className="w-full bg-white/70 border-t border-amber-100">
+          <div className="w-full bg-[var(--paper-deep)]/70 border-t border-[var(--line)]">
             <div
               className="mx-auto max-w-6xl px-4 py-2 ad-slot"
               dangerouslySetInnerHTML={{ __html: footerAd.html }}

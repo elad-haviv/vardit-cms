@@ -51,15 +51,15 @@ export default async function TagPage({ params, searchParams }) {
 
   return (
     <div>
-      <nav className="text-sm text-gray-500 mb-3">
-        <Link href="/" className="hover:text-[#c0562f]">דף הבית</Link> ›{" "}
-        <span className="text-[#9c4123] font-medium">#{tag.name}</span>
+      <nav className="text-sm text-[var(--ink-soft)] mb-3">
+        <Link href="/" className="hover:text-[var(--paprika-deep)]">דף הבית</Link> ›{" "}
+        <span className="text-[var(--paprika-deep)] font-medium">#{tag.name}</span>
       </nav>
-      <h1 className="text-3xl font-black text-[#4a3728] mb-2">מתכונים בתגית #{tag.name}</h1>
-      <p className="text-gray-500 mb-6">{total} מתכונים</p>
+      <h1 className="text-3xl font-display text-[var(--ink-deep)] mb-2">מתכונים בתגית #{tag.name}</h1>
+      <p className="text-[var(--ink-soft)] mb-6">{total} מתכונים</p>
 
       {rows.length === 0 ? (
-        <p className="text-center py-16 text-gray-500">אין מתכונים בתגית זו עדיין.</p>
+        <p className="text-center py-16 text-[var(--ink-soft)]">אין מתכונים בתגית זו עדיין.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {rows.map((p) => (

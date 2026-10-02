@@ -38,7 +38,7 @@ export default function CommentSection({ postId }) {
 
   return (
     <section className="mt-12" id="comments">
-      <h2 className="text-2xl font-black text-[#4a3728] mb-5">תגובות</h2>
+      <h2 className="text-2xl font-display text-[var(--ink-deep)] mb-5">תגובות</h2>
 
       <div
         id="comments-list"
@@ -48,14 +48,14 @@ export default function CommentSection({ postId }) {
         <ApprovedComments postId={postId} />
       </div>
 
-      <form onSubmit={submit} className="bg-white rounded-2xl border border-amber-100 p-5 shadow-sm space-y-3">
-        <h3 className="font-bold text-[#9c4123]">השאירו תגובה</h3>
+      <form onSubmit={submit} className="bg-[var(--card)] rounded-2xl border border-[var(--line)] p-5 shadow-sm space-y-3">
+        <h3 className="font-bold text-[var(--paprika-deep)]">השאירו תגובה</h3>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
           placeholder="השם שלכם"
-          className="w-full rounded-lg border border-amber-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#c0562f]/40"
+          className="w-full rounded-lg border border-[var(--line)] px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[var(--paprika)] focus:ring-0/40"
         />
         <textarea
           value={body}
@@ -63,7 +63,7 @@ export default function CommentSection({ postId }) {
           required
           rows={4}
           placeholder="התגובה שלכם..."
-          className="w-full rounded-lg border border-amber-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#c0562f]/40"
+          className="w-full rounded-lg border border-[var(--line)] px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:border-[var(--paprika)] focus:ring-0/40"
         />
         {/* honeypot: hidden from humans */}
         <input
@@ -79,7 +79,7 @@ export default function CommentSection({ postId }) {
         <div className="flex items-center gap-3">
           <button
             disabled={sending}
-            className="bg-[#c0562f] hover:bg-[#9c4123] disabled:opacity-50 text-white font-bold px-6 py-2.5 rounded-full transition text-sm"
+            className="bg-[var(--paprika)] hover:bg-[var(--paprika-deep)] disabled:opacity-50 text-white font-bold px-6 py-2.5 rounded-full transition text-sm"
           >
             {sending ? "שולח..." : "שלח תגובה"}
           </button>
@@ -99,9 +99,9 @@ function ApprovedComments({ postId }) {
       .then((r) => r.text())
       .then((html) => setItems(html))
       .catch(() => setItems(""));
-    return <p className="text-sm text-gray-400">טוען תגובות...</p>;
+    return <p className="text-sm text-[var(--ink-soft)]">טוען תגובות...</p>;
   }
   if (!items || items === "<ul class=\"space-y-3\"></ul>")
-    return <p className="text-sm text-gray-400">עדיין אין תגובות — היו הראשונים להגיב!</p>;
+    return <p className="text-sm text-[var(--ink-soft)]">עדיין אין תגובות — היו הראשונים להגיב!</p>;
   return <div dangerouslySetInnerHTML={{ __html: items }} />;
 }

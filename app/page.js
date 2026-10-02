@@ -24,7 +24,7 @@ function BetweenCardsAd() {
   if (!ad) return null;
   return (
     <div className="md:col-span-2 lg:col-span-3 my-2">
-      <div className="ad-slot bg-white rounded-xl border border-amber-100 p-2" dangerouslySetInnerHTML={{ __html: ad.html }} />
+      <div className="ad-slot bg-[var(--card)] rounded-xl border border-[var(--line)] p-2" dangerouslySetInnerHTML={{ __html: ad.html }} />
     </div>
   );
 }
@@ -88,33 +88,27 @@ export default function HomePage() {
 
   return (
     <div className="space-y-12">
-      {/* Hero — editable in admin settings */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-l from-[#9c4123] via-[#c0562f] to-[#d97b4f] text-white px-6 py-14 md:px-14 md:py-20 shadow-lg">
+      {/* Hero — a page from the recipe notebook (editable in admin settings) */}
+      <section className="relative notebook-page rounded-xl px-8 py-14 md:px-16 md:py-20 overflow-hidden">
         {heroImage && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={heroImage} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+          <img src={heroImage} alt="" aria-hidden="true" className="absolute inset-y-4 left-4 hidden md:block w-[38%] h-[calc(100%-2rem)] object-cover rounded-lg opacity-90 outline outline-1 outline-[rgba(30,52,80,0.15)] outline-offset-4" />
         )}
-        <div className="absolute -left-16 -top-16 w-64 h-64 rounded-full bg-white/10" aria-hidden="true" />
-        <div className="absolute right-1/3 -bottom-24 w-80 h-80 rounded-full bg-white/5" aria-hidden="true" />
-        <div className="relative max-w-2xl">
-          <p className="text-amber-200 font-medium mb-2 text-sm tracking-wide">✻ ברוכים הבאים למטבח של סבתא ✻</p>
-          <h1 className="text-4xl md:text-6xl font-black leading-tight">{heroTitle}</h1>
-          <p className="mt-3 text-xl md:text-2xl text-amber-100 font-light">{heroSubtitle}</p>
-          <p className="mt-4 text-amber-50/90 leading-relaxed">{heroText}</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href="/recipes"
-              className="bg-white text-[#9c4123] font-bold px-6 py-3 rounded-full shadow hover:bg-amber-50 transition"
-            >
+        <div className={`relative max-w-2xl ${heroImage ? "md:max-w-[52%]" : ""}`}>
+          <h1 className="font-display text-5xl md:text-7xl text-[var(--ink-deep)] leading-[1.1]">{heroTitle}</h1>
+          <p className="font-display mt-3 text-2xl md:text-3xl text-[var(--paprika-deep)]">{heroSubtitle}</p>
+          <p className="mt-5 text-[var(--ink)] leading-relaxed">{heroText}</p>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Link href="/recipes" className="btn-primary">
               כל המתכונים
             </Link>
             <a
               href="https://www.youtube.com/channel/UC0CXSMXspDmGrtJ876QU6QA"
               target="_blank"
               rel="noopener noreferrer"
-              className="border border-white/40 px-6 py-3 rounded-full font-medium hover:bg-white/10 transition"
+              className="btn-ghost"
             >
-              ערוץ היוטיוב ▸
+              ערוץ היוטיוב
             </a>
           </div>
         </div>
@@ -127,9 +121,9 @@ export default function HomePage() {
             <Link
               key={c.slug}
               href={`/category/${c.slug}`}
-              className="shrink-0 bg-white border border-amber-200 hover:border-[#c0562f] hover:text-[#c0562f] px-4 py-2 rounded-full text-sm font-medium transition shadow-sm"
+              className="chip-cat shrink-0"
             >
-              {c.name} <span className="text-gray-400 text-xs">({c.cnt})</span>
+              {c.name} <span className="text-[var(--ink-soft)] text-xs">({c.cnt})</span>
             </Link>
           ))}
         </div>
@@ -137,12 +131,12 @@ export default function HomePage() {
 
       {/* Scheduled featured band — appears only while a feature window is active */}
       {scheduled.length > 0 && (
-        <section className="rounded-3xl bg-white/60 border-2 border-[#c0562f]/40 p-6 md:p-8">
+        <section className="rounded-xl recipe-card p-6 md:p-8">
           <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
-            <h2 className="text-2xl md:text-3xl font-black text-[#9c4123] flex items-center gap-2">
-              ✻ מתכונים מודגשים להשבוע
+            <h2 className="text-2xl md:text-3xl font-display text-[var(--ink)] flex items-center gap-2">
+              מתכונים מודגשים להשבוע
             </h2>
-            <Link href="/recipes" className="text-sm text-[#c0562f] font-medium hover:underline">לכל המתכונים ←</Link>
+            <Link href="/recipes" className="text-sm text-[var(--paprika-deep)] font-medium hover:underline">לכל המתכונים ←</Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {scheduled.map((p) => (
@@ -155,8 +149,8 @@ export default function HomePage() {
       {/* Latest — uneven grid: first card 2×2 large, featured get highlighted, wavy spans */}
       <section>
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-2xl md:text-3xl font-black text-[#4a3728]">מתכונים חדשים</h2>
-          <Link href="/recipes" className="text-sm text-[#c0562f] font-medium hover:underline">לכל המתכונים ←</Link>
+          <h2 className="text-2xl md:text-3xl font-display text-[var(--ink-deep)]">מתכונים חדשים</h2>
+          <Link href="/recipes" className="text-sm text-[var(--paprika-deep)] font-medium hover:underline">לכל המתכונים ←</Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 auto-rows-fr gap-5">
           {latest.map((p, i) => {
@@ -188,7 +182,7 @@ export default function HomePage() {
       {/* Permanent recommended — only shown when no scheduled features are active */}
       {recommended.length > 0 && scheduled.length === 0 && (
         <section>
-          <h2 className="text-2xl md:text-3xl font-black text-[#4a3728] mb-5">מומלצים</h2>
+          <h2 className="text-2xl md:text-3xl font-display text-[var(--ink-deep)] mb-5">מומלצים</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {recommended.map((p) => (
               <RecipeCard key={`r-${p.id}`} post={p} categories={catMap.get(p.id) || []} highlight={highlightIds.has(p.id)} />
@@ -201,8 +195,8 @@ export default function HomePage() {
       {popular.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-2xl md:text-3xl font-black text-[#4a3728] flex items-center gap-2">
-              🔥 הפופולריים ביותר
+            <h2 className="text-2xl md:text-3xl font-display text-[var(--ink-deep)] flex items-center gap-2">
+              הפופולריים ביותר
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -210,21 +204,21 @@ export default function HomePage() {
               <Link
                 key={`pop-${p.id}`}
                 href={`/recipe/${p.slug}`}
-                className="group bg-white rounded-2xl border border-amber-100 shadow-sm hover:shadow-lg transition flex items-center gap-4 p-3"
+                className="group recipe-card flex items-center gap-4 p-3"
               >
-                <span className="shrink-0 w-8 text-center font-black text-xl text-[#c0562f]/40 group-hover:text-[#c0562f] transition">
+                <span className="font-display shrink-0 w-8 text-center text-xl text-[var(--saffron)] group-hover:text-[var(--paprika)] transition-colors">
                   {i + 1}
                 </span>
                 {p.featured_image_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.featured_image_url} alt="" loading="lazy" className="w-20 h-20 rounded-xl object-cover shrink-0" />
+                  <img src={p.featured_image_url} alt="" loading="lazy" className="w-20 h-20 rounded-[0.55rem] object-cover shrink-0 outline outline-1 outline-[rgba(30,52,80,0.1)] outline-offset-[-1px]" />
                 ) : (
-                  <div className="w-20 h-20 rounded-xl bg-amber-50 border border-amber-100 shrink-0 flex items-center justify-center text-3xl opacity-40">🍳</div>
+                  <div className="w-20 h-20 rounded-[0.55rem] bg-[var(--paper-deep)] border border-[var(--line)] shrink-0 flex items-center justify-center text-3xl opacity-40">🍳</div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-bold text-[#4a3728] group-hover:text-[#c0562f] transition line-clamp-1">{p.title}</h3>
-                  {p.excerpt && <p className="text-sm text-gray-500 line-clamp-1 mt-0.5">{p.excerpt}</p>}
-                  <p className="text-xs text-gray-400 mt-1">👀 {p.views} צפיות</p>
+                  <h3 className="font-display text-[var(--ink-deep)] group-hover:text-[var(--paprika-deep)] transition-colors line-clamp-1">{p.title}</h3>
+                  {p.excerpt && <p className="text-sm text-[var(--ink-soft)] line-clamp-1 mt-0.5">{p.excerpt}</p>}
+                  <p className="text-xs text-[var(--ink-soft)] mt-1">👀 {p.views} צפיות</p>
                 </div>
               </Link>
             ))}

@@ -31,14 +31,14 @@ export default function SiteFooter({ siteTitle }) {
   const links = parseLinksSetting();
 
   return (
-    <footer className="bg-[#4a3728] text-amber-50 mt-12">
-      <div className="mx-auto max-w-6xl px-4 py-10 grid gap-8 md:grid-cols-3">
+    <footer className="bg-[var(--ink-deep)] text-[var(--paper)] mt-16 border-t-2 border-dashed border-[var(--saffron)]/50">
+      <div className="mx-auto max-w-6xl px-4 py-12 grid gap-8 md:grid-cols-3">
         <div>
           <div className="flex items-center gap-3">
-            <img src="/images/logo.png" alt={siteTitle} className="w-12 h-12 object-contain rounded-lg bg-white/90" />
-            <span className="font-black text-lg">{siteTitle}</span>
+            <img src="/images/logo.png" alt={siteTitle} className="w-12 h-12 object-contain rounded-[0.55rem] bg-[var(--card)]" />
+            <span className="font-display text-xl">{siteTitle}</span>
           </div>
-          <p className="mt-3 text-sm text-amber-100/80 leading-relaxed">
+          <p className="mt-3 text-sm text-[var(--paper)]/75 leading-relaxed">
             מתכונים מבית סבתא — מטבח תוניסאי-יהודי אותנטי, מדור לדור.
           </p>
           {links.length > 0 && (
@@ -49,7 +49,7 @@ export default function SiteFooter({ siteTitle }) {
                   href={l.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-sm transition"
+                  className="px-3 py-1.5 rounded-[0.55rem] bg-white/10 hover:bg-white/20 text-sm transition-colors"
                 >
                   {l.name}
                 </a>
@@ -58,11 +58,11 @@ export default function SiteFooter({ siteTitle }) {
           )}
         </div>
         <div>
-          <h3 className="font-bold mb-3 text-amber-200">קטגוריות מובילות</h3>
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-amber-100/90">
+          <h3 className="font-display mb-3 text-[var(--saffron)]">קטגוריות מובילות</h3>
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[var(--paper)]/85">
             {cats.map((c) => (
               <li key={c.slug}>
-                <Link href={`/category/${c.slug}`} className="hover:text-white transition">
+                <Link href={`/category/${c.slug}`} className="hover:text-white transition-colors">
                   {c.name}
                 </Link>
               </li>
@@ -70,16 +70,16 @@ export default function SiteFooter({ siteTitle }) {
           </ul>
         </div>
         <div>
-          <h3 className="font-bold mb-3 text-amber-200">מידע</h3>
-          <ul className="space-y-1 text-sm text-amber-100/90">
-            <li><Link href="/recipes" className="hover:text-white transition">כל המתכונים</Link></li>
-            <li><Link href="/page/about" className="hover:text-white transition">אודות</Link></li>
-            <li><Link href="/page/contact" className="hover:text-white transition">צור קשר</Link></li>
-            <li><Link href="/admin" className="hover:text-white transition">ניהול</Link></li>
+          <h3 className="font-display mb-3 text-[var(--saffron)]">מידע</h3>
+          <ul className="space-y-1 text-sm text-[var(--paper)]/85">
+            <li><Link href="/recipes" className="hover:text-white transition-colors">כל המתכונים</Link></li>
+            <li><Link href="/page/about" className="hover:text-white transition-colors">אודות</Link></li>
+            <li><Link href="/page/contact" className="hover:text-white transition-colors">צור קשר</Link></li>
+            <li><Link href="/admin" className="hover:text-white transition-colors">ניהול</Link></li>
           </ul>
         </div>
       </div>
-      <div className="border-t border-white/10 py-4 text-center text-xs text-amber-100/60">
+      <div className="border-t border-white/10 py-4 text-center text-xs text-[var(--paper)]/55">
         © {new Date().getFullYear()} {siteTitle} · כל הזכויות שמורות
       </div>
     </footer>

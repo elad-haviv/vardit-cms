@@ -80,25 +80,25 @@ export default async function RecipePage({ params }) {
 
   return (
     <article className="max-w-3xl mx-auto">
-      <nav className="text-sm text-gray-500 mb-3">
-        <Link href="/" className="hover:text-[#c0562f]">דף הבית</Link>
+      <nav className="text-sm text-[var(--ink-soft)] mb-3">
+        <Link href="/" className="hover:text-[var(--paprika-deep)]">דף הבית</Link>
         {cat && (
           <>
             {" › "}
-            <Link href={`/category/${cat.slug}`} className="hover:text-[#c0562f]">{cat.name}</Link>
+            <Link href={`/category/${cat.slug}`} className="hover:text-[var(--paprika-deep)]">{cat.name}</Link>
           </>
         )}
         {" › "}
-        <span className="text-[#9c4123] font-medium">{post.title}</span>
+        <span className="text-[var(--paprika-deep)] font-medium">{post.title}</span>
       </nav>
 
-      <h1 className="text-3xl md:text-4xl font-black text-[#4a3728] leading-tight">{post.title}</h1>
-      <div className="flex items-center flex-wrap gap-2 mt-3 text-sm text-gray-400">
+      <h1 className="text-3xl md:text-4xl font-display text-[var(--ink-deep)] leading-tight">{post.title}</h1>
+      <div className="flex items-center flex-wrap gap-2 mt-3 text-sm text-[var(--ink-soft)]">
         {cats.map((c) => (
           <Link
             key={c.id}
             href={`/category/${c.slug}`}
-            className="bg-[#c0562f]/10 text-[#c0562f] px-3 py-1 rounded-full font-bold text-xs"
+            className="bg-[var(--paprika)]/10 text-[var(--paprika-deep)] px-3 py-1 rounded-full font-bold text-xs"
           >
             {c.name}
           </Link>
@@ -112,7 +112,7 @@ export default async function RecipePage({ params }) {
             <Link
               key={t.id}
               href={`/tag/${t.slug}`}
-              className="bg-amber-100 text-[#9c4123] hover:bg-amber-200 px-2.5 py-0.5 rounded-full font-medium text-xs transition"
+              className="bg-[var(--paper-deep)] text-[var(--paprika-deep)] hover:bg-[var(--paper-deep)] px-2.5 py-0.5 rounded-full font-medium text-xs transition"
             >
               #{t.name}
             </Link>
@@ -125,12 +125,12 @@ export default async function RecipePage({ params }) {
         <img
           src={post.featured_image_url}
           alt={post.title}
-          className="w-full rounded-2xl shadow-md mt-6 aspect-[16/9] object-cover bg-amber-50"
+          className="w-full rounded-2xl shadow-md mt-6 aspect-[16/9] object-cover bg-[var(--paper-deep)]"
         />
       )}
 
       <div
-        className="prose-recipe mt-8 text-[#4a3728]"
+        className="prose-recipe mt-8 text-[var(--ink-deep)]"
         dangerouslySetInnerHTML={{ __html: contentRender.html }}
       />
 
@@ -138,16 +138,16 @@ export default async function RecipePage({ params }) {
       <nav className="grid grid-cols-2 gap-3 mt-10">
         <div>
           {prev && (
-            <Link href={`/recipe/${prev.slug}`} className="block bg-white rounded-xl border border-amber-100 p-4 hover:border-[#c0562f] transition">
-              <span className="text-xs text-gray-400">→ מתכון קודם</span>
+            <Link href={`/recipe/${prev.slug}`} className="block bg-[var(--card)] rounded-xl border border-[var(--line)] p-4 hover:border-[var(--paprika)] transition">
+              <span className="text-xs text-[var(--ink-soft)]">→ מתכון קודם</span>
               <div className="font-bold text-sm mt-1 line-clamp-2">{prev.title}</div>
             </Link>
           )}
         </div>
         <div>
           {next && (
-            <Link href={`/recipe/${next.slug}`} className="block bg-white rounded-xl border border-amber-100 p-4 hover:border-[#c0562f] transition text-left">
-              <span className="text-xs text-gray-400">מתכון הבא ←</span>
+            <Link href={`/recipe/${next.slug}`} className="block bg-[var(--card)] rounded-xl border border-[var(--line)] p-4 hover:border-[var(--paprika)] transition text-left">
+              <span className="text-xs text-[var(--ink-soft)]">מתכון הבא ←</span>
               <div className="font-bold text-sm mt-1 line-clamp-2">{next.title}</div>
             </Link>
           )}
@@ -156,7 +156,7 @@ export default async function RecipePage({ params }) {
 
       {related.length > 0 && cat && (
         <section className="mt-12">
-          <h2 className="text-2xl font-black text-[#4a3728] mb-4">מתכונים נוספים ב{cat.name}</h2>
+          <h2 className="text-2xl font-display text-[var(--ink-deep)] mb-4">מתכונים נוספים ב{cat.name}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {related.map((p) => (
               <RecipeCard key={p.id} post={p} categories={p._cats} />

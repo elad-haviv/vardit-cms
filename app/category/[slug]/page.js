@@ -51,30 +51,30 @@ export default async function CategoryPage({ params, searchParams }) {
 
   return (
     <div>
-      <nav className="text-sm text-gray-500 mb-3">
-        <Link href="/" className="hover:text-[#c0562f]">דף הבית</Link> ›{" "}
-        <span className="text-[#9c4123] font-medium">{cat.name}</span>
+      <nav className="text-sm text-[var(--ink-soft)] mb-3">
+        <Link href="/" className="hover:text-[var(--paprika-deep)]">דף הבית</Link> ›{" "}
+        <span className="text-[var(--paprika-deep)] font-medium">{cat.name}</span>
       </nav>
 
       {/* Enriched category header: image + description */}
-      <div className="bg-white rounded-2xl border border-amber-100 p-5 mb-6 flex items-start gap-4 flex-wrap">
+      <div className="bg-[var(--card)] rounded-2xl border border-[var(--line)] p-5 mb-6 flex items-start gap-4 flex-wrap">
         {cat.image_url && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={cat.image_url}
             alt={cat.name}
-            className="w-32 aspect-[4/3] object-cover rounded-xl border border-amber-100 bg-amber-50"
+            className="w-32 aspect-[4/3] object-cover rounded-xl border border-[var(--line)] bg-[var(--paper-deep)]"
           />
         )}
         <div className="flex-1 min-w-[220px]">
-          <h1 className="text-3xl font-black text-[#4a3728] mb-1">{cat.name}</h1>
+          <h1 className="text-3xl font-display text-[var(--ink-deep)] mb-1">{cat.name}</h1>
           {cat.description && <p className="text-gray-600 leading-relaxed whitespace-pre-line">{cat.description}</p>}
-          <p className="text-gray-400 text-sm mt-1">{total} מתכונים בקטגוריה</p>
+          <p className="text-[var(--ink-soft)] text-sm mt-1">{total} מתכונים בקטגוריה</p>
         </div>
       </div>
 
       {rows.length === 0 ? (
-        <p className="text-center py-16 text-gray-500">אין מתכונים בקטגוריה זו עדיין.</p>
+        <p className="text-center py-16 text-[var(--ink-soft)]">אין מתכונים בקטגוריה זו עדיין.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {rows.map((p) => (

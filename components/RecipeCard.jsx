@@ -2,9 +2,10 @@ import Link from "next/link";
 import { formatDateHe } from "@/lib/util";
 
 /**
- * Recipe card with layout variants for the (uneven) home grid:
+ * Recipe card — "a photo pasted on paper".
+ * Layout variants for the (uneven) home grid:
  *  - size: "md" (default) | "lg" (hero card — larger type, taller image, 2×2 span handled by parent)
- *  - highlight: true → "מומלץ" badge + terracotta ring + slight lift
+ *  - highlight: true → saffron "מומלץ" tab + paprika ring
  */
 export default function RecipeCard({ post, categories, categoryName, size = "md", highlight = false }) {
   const cats = Array.isArray(categories) && categories.length > 0
@@ -17,13 +18,13 @@ export default function RecipeCard({ post, categories, categoryName, size = "md"
 
   return (
     <article
-      className={`group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full ${
-        lg ? "rounded-3xl" : ""
-      } ${highlight ? "ring-2 ring-[#c0562f]/70 ring-offset-2 ring-offset-[#faf6f0]" : "border border-amber-100"}`}
+      className={`group recipe-card flex flex-col h-full overflow-hidden ${
+        highlight ? "ring-2 ring-[var(--saffron)] ring-offset-2 ring-offset-[var(--paper)]" : ""
+      }`}
     >
       <Link
         href={`/recipe/${post.slug}`}
-        className={`block relative overflow-hidden bg-amber-50 ${lg ? "aspect-[16/10]" : "aspect-[4/3]"}`}
+        className={`block relative recipe-media ${lg ? "aspect-[16/10]" : "aspect-[4/3]"}`}
       >
         {post.featured_image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -31,17 +32,17 @@ export default function RecipeCard({ post, categories, categoryName, size = "md"
             src={post.featured_image_url}
             alt={post.title}
             loading="lazy"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover"
           />
         ) : (
-          <div className={`w-full h-full flex items-center justify-center opacity-30 ${lg ? "text-7xl" : "text-5xl"}`}>🍳</div>
+          <div className={`w-full h-full flex items-center justify-center opacity-25 ${lg ? "text-7xl" : "text-5xl"}`}>🍳</div>
         )}
         {chips.length > 0 && (
           <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
             {chips.map((c, i) => (
               <span
                 key={c.slug || c.name || i}
-                className="bg-[#c0562f] text-white text-xs font-bold px-3 py-1 rounded-full shadow"
+                className="bg-[var(--card)]/95 text-[var(--ink-deep)] border border-[var(--line)] text-xs font-bold px-2.5 py-1 rounded-md shadow-sm backdrop-blur-sm"
               >
                 {c.name}
               </span>
@@ -49,7 +50,7 @@ export default function RecipeCard({ post, categories, categoryName, size = "md"
           </div>
         )}
         {highlight && (
-          <span className="absolute bottom-3 left-3 bg-[#4a3728]/90 text-amber-200 text-xs font-bold px-3 py-1.5 rounded-full shadow flex items-center gap-1">
+          <span className="absolute bottom-3 right-3 bg-[var(--saffron)] text-[var(--ink-deep)] text-xs font-bold px-3 py-1.5 rounded-md shadow flex items-center gap-1">
             ★ מומלץ
           </span>
         )}
@@ -57,7 +58,7 @@ export default function RecipeCard({ post, categories, categoryName, size = "md"
       <div className={`flex flex-col flex-1 ${lg ? "p-6" : "p-4"}`}>
         <Link href={`/recipe/${post.slug}`}>
           <h3
-            className={`font-black leading-snug text-[#4a3728] group-hover:text-[#c0562f] transition line-clamp-2 ${
+            className={`font-display leading-snug text-[var(--ink-deep)] group-hover:text-[var(--paprika-deep)] transition-colors line-clamp-2 ${
               lg ? "text-2xl md:text-3xl" : "text-lg"
             }`}
           >
@@ -65,9 +66,11 @@ export default function RecipeCard({ post, categories, categoryName, size = "md"
           </h3>
         </Link>
         {post.excerpt && (
-          <p className={`mt-1 text-gray-500 line-clamp-2 flex-1 ${lg ? "text-base" : "text-sm"}`}>{post.excerpt}</p>
+          <p className={`mt-1.5 text-[var(--ink-soft)] line-clamp-2 flex-1 ${lg ? "text-base" : "text-sm"}`}>{post.excerpt}</p>
         )}
-        <time className={`mt-3 text-gray-400 ${lg ? "text-sm" : "text-xs"}`}>{formatDateHe(post.created_at)}</time>
+        <time className={`mt-3 pt-3 border-t border-[var(--line)] text-[var(--ink-soft)] ${lg ? "text-sm" : "text-xs"}`}>
+          {formatDateHe(post.created_at)}
+        </time>
       </div>
     </article>
   );

@@ -31,8 +31,8 @@ export default function LoginForm() {
 
   return (
     <div className="max-w-sm mx-auto py-16">
-      <div className="bg-white rounded-2xl border border-amber-100 shadow p-8">
-        <h1 className="text-2xl font-black text-[#4a3728] mb-6 text-center">כניסה לניהול</h1>
+      <div className="bg-[var(--card)] rounded-2xl border border-[var(--line)] shadow p-8">
+        <h1 className="text-2xl font-display text-[var(--ink-deep)] mb-6 text-center">כניסה לניהול</h1>
         {error && (
           <div className="mb-4 bg-red-50 text-red-700 text-sm rounded-lg p-3 text-center">
             שם משתמש או סיסמה שגויים
@@ -46,7 +46,7 @@ export default function LoginForm() {
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full rounded-lg border border-amber-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#c0562f]/40"
+              className="w-full rounded-lg border border-[var(--line)] px-4 py-2.5 focus:outline-none focus:ring-2 focus:border-[var(--paprika)] focus:ring-0/40"
             />
           </div>
           <div>
@@ -57,12 +57,12 @@ export default function LoginForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-amber-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#c0562f]/40"
+              className="w-full rounded-lg border border-[var(--line)] px-4 py-2.5 focus:outline-none focus:ring-2 focus:border-[var(--paprika)] focus:ring-0/40"
             />
           </div>
           <button
             disabled={busy}
-            className="w-full bg-[#c0562f] hover:bg-[#9c4123] disabled:opacity-50 text-white font-bold py-2.5 rounded-lg transition"
+            className="w-full bg-[var(--paprika)] hover:bg-[var(--paprika-deep)] disabled:opacity-50 text-white font-bold py-2.5 rounded-lg transition"
           >
             {busy ? "..." : "כניסה"}
           </button>

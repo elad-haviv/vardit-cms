@@ -27,8 +27,8 @@ export default function StickySidebarAd() {
         visible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >
-      <div className="rounded-xl bg-white shadow-lg border border-amber-100 p-2">
-        <div className="text-[10px] text-gray-400 text-center mb-1">פרסומת</div>
+      <div className="rounded-xl bg-[var(--card)] shadow-lg border border-[var(--line)] p-2">
+        <div className="text-[10px] text-[var(--ink-soft)] text-center mb-1">פרסומת</div>
         <div className="ad-slot" dangerouslySetInnerHTML={{ __html: html }} />
       </div>
     </aside>

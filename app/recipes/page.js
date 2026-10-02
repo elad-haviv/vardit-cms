@@ -36,8 +36,8 @@ export default async function RecipesPage({ searchParams }) {
 
   return (
     <div>
-      <h1 className="text-3xl font-black text-[#4a3728] mb-2">כל המתכונים</h1>
-      <p className="text-gray-500 mb-6">{total} מתכונים באתר</p>
+      <h1 className="text-3xl font-display text-[var(--ink-deep)] mb-2">כל המתכונים</h1>
+      <p className="text-[var(--ink-soft)] mb-6">{total} מתכונים באתר</p>
 
       <form method="get" action="/recipes" className="flex gap-2 mb-6 max-w-lg">
         <input
@@ -45,15 +45,15 @@ export default async function RecipesPage({ searchParams }) {
           defaultValue={q}
           type="search"
           placeholder="חיפוש מתכון לפי שם..."
-          className="flex-1 rounded-full border border-amber-200 bg-white px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#c0562f]/40"
+          className="flex-1 rounded-full border border-[var(--line)] bg-[var(--card)] px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[var(--saffron)]/40"
         />
-        <button className="bg-[#c0562f] hover:bg-[#9c4123] text-white font-bold px-6 py-2.5 rounded-full transition">
+        <button className="btn-primary px-6 py-2.5">
           חיפוש
         </button>
       </form>
 
       {rows.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
+        <div className="text-center py-20 text-[var(--ink-soft)]">
           <div className="text-5xl mb-4">🔍</div>
           לא נמצאו מתכונים{q ? ` עבור "${q}"` : ""}.
         </div>
@@ -64,7 +64,7 @@ export default async function RecipesPage({ searchParams }) {
               <RecipeCard post={p} categories={catMap.get(p.id) || []} />
               {ad && (i + 1) % 8 === 0 && i !== rows.length - 1 && (
                 <div className="sm:col-span-2 lg:col-span-3">
-                  <div className="ad-slot bg-white rounded-xl border border-amber-100 p-2" dangerouslySetInnerHTML={{ __html: ad.html }} />
+                  <div className="ad-slot bg-[var(--card)] rounded-xl border border-[var(--line)] p-2" dangerouslySetInnerHTML={{ __html: ad.html }} />
                 </div>
               )}
             </div>
